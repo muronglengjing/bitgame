@@ -30,12 +30,15 @@ class Hero(pygame.sprite.Sprite):
         self.speed = 3
         self.speed__init = 3
 
+        # 处理弹跳事件
+        self.jumping = False
+        self.g = 20
 
     def hp_line(self):
         self.player_information()
         hp_percentage = self.hp / self.hp_max
         self.hp_band = pygame.Surface([880, 10])
-        if self.hp >=0 :
+        if self.hp >= 0:
             hp_band = pygame.Surface([880 * hp_percentage, 10])
             hp_band.fill([220, 100, 100])
             self.hp_band.blit(hp_band, (0, 0))
@@ -74,7 +77,7 @@ class Hero(pygame.sprite.Sprite):
 
     def head_direction(self, x, y):
         arg1, arg2 = (x - self.rect.centerx) + (y - self.rect.centery), -(x - self.rect.centerx) + (
-                    y - self.rect.centery)
+                y - self.rect.centery)
         if arg1 >= 0 and arg2 >= 0:
             self.direction = 2
             return 2
@@ -93,11 +96,11 @@ class Hero(pygame.sprite.Sprite):
     def key_head_direction(self, key):
         if key[pygame.K_UP] or key[pygame.K_w]:
             self.direction = 0
-        elif key[pygame.K_RIGHT]or key[pygame.K_d]:
+        elif key[pygame.K_RIGHT] or key[pygame.K_d]:
             self.direction = 1
-        elif key[pygame.K_DOWN]or key[pygame.K_s]:
+        elif key[pygame.K_DOWN] or key[pygame.K_s]:
             self.direction = 2
-        elif key[pygame.K_LEFT]or key[pygame.K_a]:
+        elif key[pygame.K_LEFT] or key[pygame.K_a]:
             self.direction = 3
 
     def key_move(self, key):
@@ -124,9 +127,18 @@ class Hero(pygame.sprite.Sprite):
         elif self.rect.centery > 720:
             self.rect.centery = 720
         hp_percent = self.hp / self.hp_max
-        self.defense = int((self.defense__init * 8)/(hp_percent+1)-3 * self.defense__init)
-        self.attraction = int(-0.5*self.attract_init * (hp_percent ** 2) + 1.5 * self.attract_init)
-        self.speed = -1.3*self.speed__init*hp_percent**2 + 2.3*self.speed__init
+        self.defense = int((self.defense__init * 8) / (hp_percent + 1) - 3 * self.defense__init)
+        self.attraction = int(-0.5 * self.attract_init * (hp_percent ** 2) + 1.5 * self.attract_init)
+        self.speed = -1.3 * self.speed__init * hp_percent ** 2 + 2.3 * self.speed__init
+
+        if self.jumping:
+            self.jump()
+        else:
+            self.g = 20
+
+    def jump(self):
+        self.g -= 1
+        self.rect.centery -= self.g
 
 
 class Hero_group(pygame.sprite.Group):
