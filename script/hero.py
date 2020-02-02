@@ -60,7 +60,8 @@ class Hero(pygame.sprite.Sprite):
         pygame.mixer.music.play()
         self.update()
 
-    def move(self, x, y):
+    # 根据（x， y）的二维移动
+    def move_2d(self, x, y):
         if self.rect.centerx == x and self.rect.centery == y:
             pass
         else:
@@ -75,6 +76,7 @@ class Hero(pygame.sprite.Sprite):
             self.rect.centerx += -dx * self.speed
             self.rect.centery += -dy * self.speed
 
+    # 根据（x， y）的角色面向
     def head_direction(self, x, y):
         arg1, arg2 = (x - self.rect.centerx) + (y - self.rect.centery), -(x - self.rect.centerx) + (
                 y - self.rect.centery)
@@ -93,7 +95,19 @@ class Hero(pygame.sprite.Sprite):
         else:
             return 0
 
-    def key_head_direction(self, key):
+    # 根据键盘的二维的移动
+    def move_2d_key(self, key):
+        if key[pygame.K_UP] or key[pygame.K_w]:
+            self.rect.centery -= self.speed
+        if key[pygame.K_RIGHT] or key[pygame.K_d]:
+            self.rect.centerx += self.speed
+        if key[pygame.K_DOWN] or key[pygame.K_s]:
+            self.rect.centery += self.speed
+        if key[pygame.K_LEFT] or key[pygame.K_a]:
+            self.rect.centerx -= self.speed
+
+    # 根据键盘的角色面向
+    def head_direction_key(self, key):
         if key[pygame.K_UP] or key[pygame.K_w]:
             self.direction = 0
         elif key[pygame.K_RIGHT] or key[pygame.K_d]:
@@ -103,15 +117,19 @@ class Hero(pygame.sprite.Sprite):
         elif key[pygame.K_LEFT] or key[pygame.K_a]:
             self.direction = 3
 
-    def key_move(self, key):
-        if key[pygame.K_UP] or key[pygame.K_w]:
-            self.rect.centery -= self.speed
-        if key[pygame.K_RIGHT] or key[pygame.K_d]:
-            self.rect.centerx += self.speed
-        if key[pygame.K_DOWN] or key[pygame.K_s]:
-            self.rect.centery += self.speed
-        if key[pygame.K_LEFT] or key[pygame.K_a]:
+    # 根据键盘在一维方向上的移动
+    def move_1d(self, key):
+        self.head_direction_key(key)
+        if key[pygame.K_a] or key[pygame.K_LEFT]:
             self.rect.centerx -= self.speed
+        if key[pygame.K_d] or key[pygame.K_RIGHT]:
+            self.rect.centerx += self.speed
+        if key[pygame.K_SPACE]:
+            self.jumping = True
+
+    def jump(self):
+        self.g -= 1
+        self.rect.centery -= self.g
 
     def update(self):
         self.image = pygame.transform.scale2x(pygame.image.load("resource\hero{}.png".format(self.direction)))
@@ -135,10 +153,6 @@ class Hero(pygame.sprite.Sprite):
             self.jump()
         else:
             self.g = 20
-
-    def jump(self):
-        self.g -= 1
-        self.rect.centery -= self.g
 
 
 class Hero_group(pygame.sprite.Group):
